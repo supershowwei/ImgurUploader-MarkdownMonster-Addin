@@ -7,7 +7,7 @@
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       mc:Ignorable="d"
                       d:DesignHeight="300"
-                      d:DesignWidth="300" Background="Black" Width="400" Height="200" WindowStartupLocation="CenterOwner">
+                      d:DesignWidth="300" Background="Black" Width="400" Height="200" WindowStartupLocation="CenterOwner" KeyUp="MetroWindow_KeyUp">
     <Grid x:Name="UploadForm">
         <Grid.DataContext>
             <local:ImgurImage />

@@ -24,7 +24,7 @@ namespace MarkdownMonsterImgurUploaderAddin
 
         public override void OnExecute(object sender)
         {
-            new ImgurUploader { Owner = this.Model.Window }.ShowDialog();
+            new ImgurUploader(this) { Owner = this.Model.Window }.ShowDialog();
         }
 
         public override void OnExecuteConfiguration(object sender)
