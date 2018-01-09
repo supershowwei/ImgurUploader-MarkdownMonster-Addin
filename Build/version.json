@@ -1,0 +1,10 @@
+{
+	"id": "ImgurUploader",
+	"name": "Upload Image to Imgur",
+	"summary": "Upload images opened from disk or the clipboard to Imgur, and embed the resulting URL as an image link into the current document.",
+	"description": "This addin allows you copy images from the clipboard, or from files on disk to be uploaded to Imgur.\r\n The returned URL is then automatically embedded into the active document as an image url.",
+	"version": "0.1",
+	"minVersion": "1.8.10",
+	"author": "© supershowwei https://dotblogs.com.tw/supershowwei",	
+	"updated": "2018-01-09T14:19:40Z"
+}
