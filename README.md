@@ -4,7 +4,7 @@
 
 ### How to setup?
 
-Download [release file](https://github.com/supershowwei/markdownmonster.imguruploaderaddin/releases) and unzip to Markdown Monster install path. (Default is "C:\Users\{your username}\AppData\Roaming\Markdown Monster\Addins")
+Download [release file](https://github.com/supershowwei/markdownmonster.imguruploaderaddin/releases) and unzip to Markdown Monster install path. (Default is `C:\Users\{your username}\AppData\Roaming\Markdown Monster\Addins`)
 
 ### How to use?
 
@@ -28,3 +28,4 @@ Download [release file](https://github.com/supershowwei/markdownmonster.imgurupl
 
 ### Paste(Ctrl + V) image from clipboard
 
+![](https://i.imgur.com/osE1JAg.gifv)
