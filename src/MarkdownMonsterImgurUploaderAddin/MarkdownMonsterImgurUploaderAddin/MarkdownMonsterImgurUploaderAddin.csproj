@@ -36,6 +36,7 @@
     </Reference>
     <Reference Include="MahApps.Metro">
       <HintPath>C:\Users\supershowwei\AppData\Local\Markdown Monster\MahApps.Metro.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="MarkdownMonster">
       <HintPath>C:\Users\supershowwei\AppData\Local\Markdown Monster\MarkdownMonster.exe</HintPath>
@@ -82,6 +83,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="imgur-uploader.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

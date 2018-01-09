@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Media;
 using FontAwesome.WPF;
 using MarkdownMonster.AddIns;
 
@@ -6,6 +9,10 @@ namespace MarkdownMonsterImgurUploaderAddin
 {
     public class ImgurUploaderAddin : MarkdownMonsterAddin
     {
+        private static readonly string IconFilePath = Path.Combine(
+            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+            "imgur-uploader.png");
+
         public ImgurUploaderAddin()
         {
             this.Id = "ImgurUploaderAddin";
@@ -16,8 +23,21 @@ namespace MarkdownMonsterImgurUploaderAddin
         {
             base.OnApplicationStart();
 
-            var menuItem =
-                new AddInMenuItem(this) { Caption = "ImgurUploader", FontawesomeIcon = FontAwesomeIcon.Bullhorn };
+            var menuItem = new AddInMenuItem(this)
+                               {
+                                   Caption = "ImgurUploader",
+                                   FontawesomeIcon = FontAwesomeIcon.Image,
+                                   ExecuteConfiguration = null
+                               };
+
+            try
+            {
+                menuItem.IconImageSource = new ImageSourceConverter().ConvertFromString(IconFilePath) as ImageSource;
+            }
+            catch
+            {
+                // ignored
+            }
 
             this.MenuItems.Add(menuItem);
         }
