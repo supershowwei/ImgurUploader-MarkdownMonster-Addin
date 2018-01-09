@@ -28,4 +28,4 @@ Download [release file](https://github.com/supershowwei/markdownmonster.imgurupl
 
 ### Paste(Ctrl + V) image from clipboard
 
-![](https://i.imgur.com/osE1JAg.gifv)
+![](https://i.imgur.com/osE1JAg.gif)
