@@ -26,6 +26,6 @@ Download [release file](https://github.com/supershowwei/markdownmonster.imgurupl
 
 ![](https://i.imgur.com/qEF2Kt2.gif)
 
-### Paste(Ctrl + V) image from clipboard
+#### Paste(Ctrl + V) image from clipboard
 
 ![](https://i.imgur.com/osE1JAg.gif)
