@@ -66,6 +66,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClipboardImageHelper.cs" />
     <Compile Include="ImgurImage.cs" />
     <Compile Include="ImgurUploader.xaml.cs">
       <DependentUpon>ImgurUploader.xaml</DependentUpon>

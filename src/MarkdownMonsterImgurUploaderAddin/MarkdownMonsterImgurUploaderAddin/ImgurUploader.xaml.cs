@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
 using MarkdownMonster.AddIns;
@@ -28,6 +27,18 @@ namespace MarkdownMonsterImgurUploaderAddin
 
         public MarkdownMonsterAddin Addin { get; }
 
+        private static byte[] ConvertClipboardDibToPngImageBytes(MemoryStream dibStream)
+        {
+            using (var ms = new MemoryStream())
+            {
+                var encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(ClipboardImageHelper.ImageFromClipboardDib(dibStream));
+                encoder.Save(ms);
+
+                return ms.ToArray();
+            }
+        }
+
         private void OpenFileButton_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog();
@@ -46,7 +57,10 @@ namespace MarkdownMonsterImgurUploaderAddin
             uploadButton.Content = "Uploading...";
             uploadButton.IsEnabled = false;
 
-            await this.UploadImage(File.ReadAllBytes(imgurImage.FilePath), imgurImage.AlternateText);
+            if (File.Exists(imgurImage.FilePath))
+            {
+                await this.UploadImage(File.ReadAllBytes(imgurImage.FilePath), imgurImage.AlternateText);
+            }
 
             uploadButton.IsEnabled = true;
             uploadButton.Content = "Upload";
@@ -61,17 +75,11 @@ namespace MarkdownMonsterImgurUploaderAddin
                 this.UploadButton.Content = "Uploading...";
                 this.UploadButton.IsEnabled = false;
 
-                if (Clipboard.ContainsImage())
+                if (Clipboard.GetData("DeviceIndependentBitmap") is MemoryStream ms)
                 {
-                    using (var ms = new MemoryStream())
-                    {
-                        var clipboardImage = Clipboard.GetData("Bitmap") as InteropBitmap;
-                        var encoder = new JpegBitmapEncoder();
-                        encoder.Frames.Add(BitmapFrame.Create(clipboardImage));
-                        encoder.Save(ms);
+                    var imageBytes = await Task.Run(() => ConvertClipboardDibToPngImageBytes(ms));
 
-                        await this.UploadImage(ms.ToArray(), imgurImage.AlternateText);
-                    }
+                    await this.UploadImage(imageBytes, imgurImage.AlternateText);
                 }
 
                 this.UploadButton.IsEnabled = true;
