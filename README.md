@@ -18,7 +18,7 @@ Download [release file](https://github.com/supershowwei/markdownmonster.imgurupl
 
 3. Click the icon, input the `ClientID`.
 
-![](https://i.imgur.com/KhFs6BX.png)
+![](https://i.imgur.com/pdlzQ4I.png)
 
 4. We can assign a image file path or paste(`Ctrl + V`) image from clipboard.
 
