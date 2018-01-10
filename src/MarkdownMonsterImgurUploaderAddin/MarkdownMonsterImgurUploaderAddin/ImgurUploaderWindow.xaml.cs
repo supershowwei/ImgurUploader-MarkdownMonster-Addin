@@ -45,7 +45,7 @@ namespace MarkdownMonsterImgurUploaderAddin
 
         public ImgurImageViewModel ImgurImage { get; set; }
 
-        public string StatusText => this.isUploading ? "Image uploading..." : DefaultStatusText;
+        public string StatusText => this.isUploading ? "Image uploading ..." : DefaultStatusText;
 
         public bool IsUploadEnable => !this.isUploading;
 
