@@ -4,7 +4,7 @@
 
 ### How to setup?
 
-Download [release file](https://github.com/supershowwei/markdownmonster.imguruploaderaddin/releases) and unzip to Markdown Monster install path. (Default install path is `C:\Users\{your username}\AppData\Roaming\Markdown Monster\Addins`)
+Download [release file](https://github.com/supershowwei/ImgurUploader-MarkdownMonster-Addin/releases) and unzip to Markdown Monster install path. (Default install path is `C:\Users\{your username}\AppData\Roaming\Markdown Monster\Addins`)
 
 ### How to use?
 
