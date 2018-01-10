@@ -56,7 +56,7 @@
             </Grid>
             <Label Content="Alternate Text: (optional)"/>
             <TextBox TextWrapping="NoWrap" Text="{Binding ImgurImage.AlternateText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            <Label Content="Client ID:"/>
+            <Label Content="Client ID: (will be saved)"/>
             <TextBox Text="{Binding ImgurImage.ClientId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
 
