@@ -50,8 +50,8 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="30"/>
                 </Grid.ColumnDefinitions>
-                
-                <TextBox Grid.Column="0" TextWrapping="NoWrap" Text="{Binding ImgurImage.FilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <TextBox Grid.Column="0" Name="ImageFilePathTextBox" TextWrapping="NoWrap" Text="{Binding ImgurImage.FilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <Button Grid.Column="1" Content="..." Click="OpenFileButton_Click"/>
             </Grid>
             <Label Content="Alternate Text: (optional)"/>

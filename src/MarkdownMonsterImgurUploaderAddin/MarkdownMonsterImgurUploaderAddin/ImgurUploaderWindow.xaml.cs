@@ -8,7 +8,6 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
 using MarkdownMonster;
-using MarkdownMonster.AddIns;
 using MarkdownMonsterImgurUploaderAddin.Helpers;
 using MarkdownMonsterImgurUploaderAddin.ViewModels;
 using Microsoft.Win32;
@@ -64,6 +63,12 @@ namespace MarkdownMonsterImgurUploaderAddin
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        private void SetImageFilePath(string value)
+        {
+            this.ImgurImage.FilePath = value;
+            this.OnPropertyChanged(nameof(this.ImgurImage));
+        }
+
         private void SetIsUploading(bool value)
         {
             this.isUploading = value;
@@ -98,7 +103,7 @@ namespace MarkdownMonsterImgurUploaderAddin
                 return false;
             }
 
-            if (!File.Exists(this.ImgurImage.FilePath))
+            if (!string.IsNullOrEmpty(this.ImgurImage.FilePath) && !File.Exists(this.ImgurImage.FilePath))
             {
                 MessageBox.Show("File is not exists.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
 
@@ -114,13 +119,13 @@ namespace MarkdownMonsterImgurUploaderAddin
 
             if (openFileDialog.ShowDialog() == true)
             {
-                this.ImgurImage.FilePath = openFileDialog.FileName;
-                this.OnPropertyChanged(nameof(this.ImgurImage));
+                this.SetImageFilePath(openFileDialog.FileName);
             }
         }
 
         private async void UploadButton_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(this.ImgurImage.FilePath)) return;
             if (!this.Valid()) return;
 
             this.SetIsUploading(true);
@@ -139,6 +144,8 @@ namespace MarkdownMonsterImgurUploaderAddin
             if (e.KeyboardDevice.IsKeyDown(Key.LeftCtrl) && e.KeyboardDevice.IsKeyUp(Key.V)
                 && Clipboard.GetData("DeviceIndependentBitmap") is MemoryStream ms)
             {
+                this.SetImageFilePath(string.Empty);
+
                 if (!this.Valid()) return;
 
                 this.SetIsUploading(true);
@@ -197,6 +204,8 @@ namespace MarkdownMonsterImgurUploaderAddin
         {
             this.DataContext = this;
             mmApp.SetThemeWindowOverride(this);
+
+            this.ImageFilePathTextBox.Focus();
         }
     }
 }
