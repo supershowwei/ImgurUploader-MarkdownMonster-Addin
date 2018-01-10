@@ -52,18 +52,9 @@ namespace MarkdownMonsterImgurUploaderAddin
             }
         }
 
-        public override void OnExecuteConfiguration(object sender)
-        {
-            MessageBox.Show(
-                "Configuration from Imgur Addin",
-                "Imgur Addin",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
-        }
-
         public override bool OnCanExecute(object sender)
         {
-            return true;
+            return this.Model.IsEditorActive;
         }
     }
 }
