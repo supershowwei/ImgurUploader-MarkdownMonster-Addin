@@ -1,0 +1,69 @@
+﻿<controls:MetroWindow x:Name="ImgurUploaderForm" x:Class="MarkdownMonsterImgurUploaderAddin.ImgurUploaderWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:local="clr-namespace:MarkdownMonsterImgurUploaderAddin"
+                      xmlns:fa="http://schemas.fontawesome.io/icons/"
+                      mc:Ignorable="d"
+                      Icon="Assets/imgur-uploader_32x32.png"
+                      Title="Upload Image to Imgur"
+                      TitleCharacterCasing="Normal"
+                      ResizeMode="CanResizeWithGrip"
+                      WindowStyle="SingleBorderWindow"
+                      IsMinButtonEnabled="False"
+                      IsMaxRestoreButtonEnabled="False"    
+                      Width="620" Height="300" MinWidth="620" MinHeight="300"
+                      WindowStartupLocation="CenterOwner"
+                      KeyUp="ImgurUploaderForm_KeyUp"
+                      ShowInTaskbar="False"
+                      FontSize="15" Activated="ImgurUploaderForm_Activated"
+                      d:DataContext="{d:DesignInstance local:ImgurUploaderWindow}">
+    
+    <Grid x:Name="MainGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+
+        <ToolBarPanel Grid.Row="0">
+            <ToolBar FontWeight="Normal">
+                <Button IsEnabled="{Binding IsUploadEnable}" Click="UploadButton_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:FontAwesome Icon="CloudUpload"
+                                        FontSize="15"
+                                        FontWeight="Normal" FontFamily="pack://application:,,,/FontAwesome.WPF;component/#FontAwesome"
+                                        Margin="5,2,5,0">
+                        </fa:FontAwesome>
+                        <TextBlock>Upload</TextBlock>
+                    </StackPanel>
+                </Button>
+            </ToolBar>
+        </ToolBarPanel>
+
+        <StackPanel Grid.Row="1" Margin="20,10,20,0">
+            <Label Content="Image File:"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="30"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBox Grid.Column="0" TextWrapping="NoWrap" Text="{Binding ImgurImage.FilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Button Grid.Column="1" Content="..." Click="OpenFileButton_Click"/>
+            </Grid>
+            <Label Content="Alternate Text: (optional)"/>
+            <TextBox TextWrapping="NoWrap" Text="{Binding ImgurImage.AlternateText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Label Content="Client ID:"/>
+            <TextBox Text="{Binding ImgurImage.ClientId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
+        <StatusBar Grid.Row="2">
+            <StatusBarItem>
+                <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" Text="{Binding StatusText}"></TextBlock>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</controls:MetroWindow>

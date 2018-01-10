@@ -1,6 +1,6 @@
-﻿namespace MarkdownMonsterImgurUploaderAddin
+﻿namespace MarkdownMonsterImgurUploaderAddin.ViewModels
 {
-    public class ImgurImage
+    public class ImgurImageViewModel
     {
         public string FilePath { get; set; }
 

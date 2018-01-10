@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Reflection;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 using FontAwesome.WPF;
 using MarkdownMonster.AddIns;
@@ -9,10 +7,6 @@ namespace MarkdownMonsterImgurUploaderAddin
 {
     public class ImgurUploaderAddin : MarkdownMonsterAddin
     {
-        private static readonly string IconFilePath = Path.Combine(
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-            "imgur-uploader.png");
-
         public ImgurUploaderAddin()
         {
             this.Id = "ImgurUploaderAddin";
@@ -32,7 +26,9 @@ namespace MarkdownMonsterImgurUploaderAddin
 
             try
             {
-                menuItem.IconImageSource = new ImageSourceConverter().ConvertFromString(IconFilePath) as ImageSource;
+                menuItem.IconImageSource = new ImageSourceConverter().ConvertFromString(
+                                                   "pack://application:,,,/MarkdownMonsterImgurUploaderAddin;component/Assets/imgur-uploader_32x32.png")
+                                               as ImageSource;
             }
             catch
             {
@@ -44,7 +40,7 @@ namespace MarkdownMonsterImgurUploaderAddin
 
         public override void OnExecute(object sender)
         {
-            new ImgurUploader(this) { Owner = this.Model.Window }.ShowDialog();
+            new ImgurUploaderWindow(this) { Owner = this.Model.Window }.ShowDialog();
         }
 
         public override void OnExecuteConfiguration(object sender)

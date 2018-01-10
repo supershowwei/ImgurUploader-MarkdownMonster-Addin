@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>C:\Users\supershowwei\AppData\Roaming\Markdown Monster\Addins\ImgurUploaderAddin\</OutputPath>
+    <OutputPath>C:\Users\wantgoo\AppData\Roaming\Markdown Monster\Addins\ImgurUploader\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,15 +31,18 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FontAwesome.WPF">
-      <HintPath>C:\Users\supershowwei\AppData\Local\Markdown Monster\FontAwesome.WPF.dll</HintPath>
+      <HintPath Condition="Exists('C:\Users\supershowwei\AppData\Local\Markdown Monster')">C:\Users\supershowwei\AppData\Local\Markdown Monster\FontAwesome.WPF.dll</HintPath>
+      <HintPath Condition="Exists('C:\Users\wantgoo\AppData\Local\Markdown Monster')">C:\Users\wantgoo\AppData\Local\Markdown Monster\FontAwesome.WPF.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MahApps.Metro">
-      <HintPath>C:\Users\supershowwei\AppData\Local\Markdown Monster\MahApps.Metro.dll</HintPath>
+      <HintPath Condition="Exists('C:\Users\supershowwei\AppData\Local\Markdown Monster')">C:\Users\supershowwei\AppData\Local\Markdown Monster\MahApps.Metro.dll</HintPath>
+      <HintPath Condition="Exists('C:\Users\wantgoo\AppData\Local\Markdown Monster')">C:\Users\wantgoo\AppData\Local\Markdown Monster\MahApps.Metro.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MarkdownMonster">
-      <HintPath>C:\Users\supershowwei\AppData\Local\Markdown Monster\MarkdownMonster.exe</HintPath>
+      <HintPath Condition="Exists('C:\Users\supershowwei\AppData\Local\Markdown Monster')">C:\Users\supershowwei\AppData\Local\Markdown Monster\MarkdownMonster.exe</HintPath>
+      <HintPath Condition="Exists('C:\Users\wantgoo\AppData\Local\Markdown Monster')">C:\Users\wantgoo\AppData\Local\Markdown Monster\MarkdownMonster.exe</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -67,10 +70,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClipboardImageHelper.cs" />
-    <Compile Include="ImgurImage.cs" />
-    <Compile Include="ImgurUploader.xaml.cs">
-      <DependentUpon>ImgurUploader.xaml</DependentUpon>
+    <Compile Include="Helpers\ClipboardImageHelper.cs" />
+    <Compile Include="ViewModels\ImgurImageViewModel.cs" />
+    <Compile Include="ImgurUploaderWindow.xaml.cs">
+      <DependentUpon>ImgurUploaderWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ImgurUploaderAddin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -79,15 +82,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="ImgurUploader.xaml">
+    <Page Include="ImgurUploaderWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="imgur-uploader.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Resource Include="Assets\imgur-uploader_32x32.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
