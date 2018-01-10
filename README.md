@@ -24,8 +24,8 @@ Download [release file](https://github.com/supershowwei/markdownmonster.imgurupl
 
 #### Assign a image file path
 
-![](https://i.imgur.com/LQq8ix5.gif)
+![](https://i.imgur.com/b2dEHjO.gif)
 
 #### Paste(Ctrl + V) image from clipboard
 
-![](https://i.imgur.com/FAUKxZ1.gif)
+![](https://i.imgur.com/ovi6hur.gif)
