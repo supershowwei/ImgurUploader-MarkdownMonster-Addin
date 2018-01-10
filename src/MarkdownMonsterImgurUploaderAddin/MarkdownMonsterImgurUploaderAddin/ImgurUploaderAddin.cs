@@ -40,7 +40,16 @@ namespace MarkdownMonsterImgurUploaderAddin
 
         public override void OnExecute(object sender)
         {
-            new ImgurUploaderWindow(this) { Owner = this.Model.Window }.ShowDialog();
+            var form = new ImgurUploaderWindow { Owner = this.Model.Window };
+
+            form.ShowDialog();
+
+            if (!string.IsNullOrEmpty(form.ImgurImage.Url))
+            {
+                this.SetSelection($"![{form.ImgurImage.AlternateText}]({form.ImgurImage.Url})");
+                this.SetEditorFocus();
+                this.RefreshPreview();
+            }
         }
 
         public override void OnExecuteConfiguration(object sender)

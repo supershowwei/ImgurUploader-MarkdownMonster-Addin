@@ -25,10 +25,9 @@ namespace MarkdownMonsterImgurUploaderAddin
             Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
             "config.json");
 
-        private readonly MarkdownMonsterAddin addin;
         private bool isUploading;
 
-        public ImgurUploaderWindow(MarkdownMonsterAddin addin)
+        public ImgurUploaderWindow()
         {
             this.InitializeComponent();
 
@@ -37,7 +36,6 @@ namespace MarkdownMonsterImgurUploaderAddin
                                   ? JsonConvert.DeserializeAnonymousType(File.ReadAllText(ConfigFilePath), configSchema)
                                   : configSchema;
 
-            this.addin = addin;
             this.ImgurImage = new ImgurImageViewModel { ClientId = savedConfig.ClientId };
         }
 
@@ -181,7 +179,7 @@ namespace MarkdownMonsterImgurUploaderAddin
                     return;
                 }
 
-                this.addin.SetSelection($"![{this.ImgurImage.AlternateText}]({result.Data.Link})");
+                this.ImgurImage.Url = result.Data.Link;
                 this.Close();
             }
             catch (Exception ex)
