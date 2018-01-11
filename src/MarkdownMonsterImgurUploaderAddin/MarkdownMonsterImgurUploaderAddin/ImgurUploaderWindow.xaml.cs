@@ -20,9 +20,11 @@ namespace MarkdownMonsterImgurUploaderAddin
     {
         private static readonly string DefaultStatusText = "Ready to upload image.";
 
-        private static readonly string ConfigFilePath = Path.Combine(
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-            "config.json");
+        private static readonly string AddinDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+        private static readonly string ConfigFilePath = Path.Combine(AddinDirectory, "config.json");
+
+        private static readonly string ClientIdFilePath = Path.Combine(AddinDirectory, "clientid");
 
         private bool isUploading;
 
@@ -30,12 +32,10 @@ namespace MarkdownMonsterImgurUploaderAddin
         {
             this.InitializeComponent();
 
-            var configSchema = new { ClientId = string.Empty };
-            var savedConfig = File.Exists(ConfigFilePath)
-                                  ? JsonConvert.DeserializeAnonymousType(File.ReadAllText(ConfigFilePath), configSchema)
-                                  : configSchema;
+            var configSchema = new { Api = string.Empty };
+            var config = JsonConvert.DeserializeAnonymousType(File.ReadAllText(ConfigFilePath), configSchema);
 
-            this.ImgurImage = new ImgurImageViewModel { ClientId = savedConfig.ClientId };
+            this.ImgurImage = new ImgurImageViewModel { ClientId = LoadClientId(), Api = config.Api };
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -58,6 +58,11 @@ namespace MarkdownMonsterImgurUploaderAddin
             }
         }
 
+        private static string LoadClientId()
+        {
+            return File.Exists(ClientIdFilePath) ? File.ReadAllText(ClientIdFilePath) : string.Empty;
+        }
+
         private void OnPropertyChanged(string propertyName)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -76,13 +81,11 @@ namespace MarkdownMonsterImgurUploaderAddin
             this.OnPropertyChanged(nameof(this.IsUploadEnable));
         }
 
-        private void SaveConfiguration()
+        private void SaveClientId()
         {
             try
             {
-                File.WriteAllText(
-                    ConfigFilePath,
-                    JsonConvert.SerializeObject(new { this.ImgurImage.ClientId }, Formatting.Indented));
+                File.WriteAllText(ClientIdFilePath, this.ImgurImage.ClientId);
             }
             catch (Exception ex)
             {
@@ -133,7 +136,7 @@ namespace MarkdownMonsterImgurUploaderAddin
             if (File.Exists(this.ImgurImage.FilePath))
             {
                 await this.UploadImage(this.ImgurImage.FilePath);
-                await Task.Run(() => this.SaveConfiguration());
+                await Task.Run(() => this.SaveClientId());
             }
 
             this.SetIsUploading(false);
@@ -153,7 +156,7 @@ namespace MarkdownMonsterImgurUploaderAddin
                 var imageBytes = await Task.Run(() => ConvertClipboardDibToPngImageBytes(ms));
 
                 await this.UploadImage(imageBytes);
-                await Task.Run(() => this.SaveConfiguration());
+                await Task.Run(() => this.SaveClientId());
 
                 this.SetIsUploading(false);
             }
@@ -165,19 +168,21 @@ namespace MarkdownMonsterImgurUploaderAddin
             {
                 var base64File = Convert.ToBase64String(fileBytes);
 
-                var client = new RestClient("https://api.imgur.com");
-                var request = new RestRequest("/3/image", Method.POST);
+                var client = new RestClient(this.ImgurImage.Api);
+                var request = new RestRequest(Method.POST);
                 request.AddHeader("Authorization", $"Client-ID {this.ImgurImage.ClientId}");
                 request.AddParameter("image", base64File);
 
                 var response = await client.ExecuteTaskAsync(request);
-                var schema = new
-                                 {
-                                     Data = new { Error = string.Empty, Link = string.Empty },
-                                     Success = false,
-                                     Status = 0
-                                 };
-                var result = JsonConvert.DeserializeAnonymousType(response.Content, schema);
+
+                var imgurResultSchema = new
+                                            {
+                                                Data = new { Error = string.Empty, Link = string.Empty },
+                                                Success = false,
+                                                Status = 0
+                                            };
+
+                var result = JsonConvert.DeserializeAnonymousType(response.Content, imgurResultSchema);
 
                 if (!result.Success)
                 {

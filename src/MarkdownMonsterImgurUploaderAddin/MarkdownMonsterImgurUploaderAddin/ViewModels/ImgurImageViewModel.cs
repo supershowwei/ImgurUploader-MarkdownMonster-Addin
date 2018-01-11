@@ -2,6 +2,8 @@
 {
     public class ImgurImageViewModel
     {
+        public string Api { get; set; }
+
         public string FilePath { get; set; }
 
         public string AlternateText { get; set; }
