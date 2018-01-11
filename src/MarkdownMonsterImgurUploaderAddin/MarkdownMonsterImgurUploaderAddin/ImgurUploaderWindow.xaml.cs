@@ -28,14 +28,17 @@ namespace MarkdownMonsterImgurUploaderAddin
 
         private bool isUploading;
 
+        private string originalClientId;
+
         public ImgurUploaderWindow()
         {
             this.InitializeComponent();
 
             var configSchema = new { Api = string.Empty };
             var config = JsonConvert.DeserializeAnonymousType(File.ReadAllText(ConfigFilePath), configSchema);
+            this.originalClientId = LoadClientId();
 
-            this.ImgurImage = new ImgurImageViewModel { ClientId = LoadClientId(), Api = config.Api };
+            this.ImgurImage = new ImgurImageViewModel { ClientId = this.originalClientId, Api = config.Api };
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -85,7 +88,12 @@ namespace MarkdownMonsterImgurUploaderAddin
         {
             try
             {
-                File.WriteAllText(ClientIdFilePath, this.ImgurImage.ClientId);
+                if (this.ImgurImage.ClientId != this.originalClientId)
+                {
+                    File.WriteAllText(ClientIdFilePath, this.ImgurImage.ClientId);
+
+                    this.originalClientId = this.ImgurImage.ClientId;
+                }
             }
             catch (Exception ex)
             {
