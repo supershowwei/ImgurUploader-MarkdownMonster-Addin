@@ -1,12 +1,16 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Reflection;
 using System.Windows.Media;
 using FontAwesome.WPF;
+using MarkdownMonster;
 using MarkdownMonster.AddIns;
 
 namespace MarkdownMonsterImgurUploaderAddin
 {
     public class ImgurUploaderAddin : MarkdownMonsterAddin
     {
+        private static readonly string AddinDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
         public ImgurUploaderAddin()
         {
             this.Id = "ImgurUploaderAddin";
@@ -17,12 +21,8 @@ namespace MarkdownMonsterImgurUploaderAddin
         {
             base.OnApplicationStart();
 
-            var menuItem = new AddInMenuItem(this)
-                               {
-                                   Caption = "ImgurUploader",
-                                   FontawesomeIcon = FontAwesomeIcon.Image,
-                                   ExecuteConfiguration = null
-                               };
+            var menuItem =
+                new AddInMenuItem(this) { Caption = "ImgurUploader", FontawesomeIcon = FontAwesomeIcon.Image };
 
             try
             {
@@ -50,6 +50,11 @@ namespace MarkdownMonsterImgurUploaderAddin
                 this.SetEditorFocus();
                 this.RefreshPreview();
             }
+        }
+
+        public override void OnExecuteConfiguration(object sender)
+        {
+            this.Model.Window.OpenTab(Path.Combine(AddinDirectory, "config.json"));
         }
 
         public override bool OnCanExecute(object sender)
