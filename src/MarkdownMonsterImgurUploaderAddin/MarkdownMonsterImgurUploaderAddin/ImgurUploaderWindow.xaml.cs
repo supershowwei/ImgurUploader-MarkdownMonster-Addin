@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
 using MarkdownMonster;
+using MarkdownMonster.Windows;
 using MarkdownMonsterImgurUploaderAddin.Helpers;
 using MarkdownMonsterImgurUploaderAddin.ViewModels;
 using Microsoft.Win32;
@@ -49,16 +50,30 @@ namespace MarkdownMonsterImgurUploaderAddin
 
         public bool IsUploadEnable => !this.isUploading;
 
-        private static byte[] ConvertClipboardDibToPngImageBytes(MemoryStream dibStream)
+        private static byte[] ConvertClipboardDibToPngImageBytes()
         {
+            if (!Clipboard.ContainsImage())
+                return null;
+                
+            var imgSource = Clipboard.GetImage();
+
+            // TODO: probaly should support several image modes here based on a file name extension?
             using (var ms = new MemoryStream())
             {
                 var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(ClipboardImageHelper.ImageFromClipboardDib(dibStream));
+                encoder.Frames.Add(BitmapFrame.Create(imgSource));
                 encoder.Save(ms);
-
                 return ms.ToArray();
             }
+
+            //using (var ms = new MemoryStream())
+            //{
+            //    var encoder = new PngBitmapEncoder();
+            //    encoder.Frames.Add(ClipboardImageHelper.ImageFromClipboardDib(dibStream));
+            //    encoder.Save(ms);
+
+            //    return ms.ToArray();
+            //}
         }
 
         private static string LoadClientId()
@@ -152,16 +167,19 @@ namespace MarkdownMonsterImgurUploaderAddin
 
         private async void ImgurUploaderForm_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyboardDevice.IsKeyDown(Key.LeftCtrl) && e.KeyboardDevice.IsKeyUp(Key.V)
-                && Clipboard.GetData("DeviceIndependentBitmap") is MemoryStream ms)
+            if(e.Key == Key.V && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
             {
+                if (!Clipboard.ContainsImage())
+                    return;
+
                 this.SetImageFilePath(string.Empty);
 
                 if (!this.Valid()) return;
 
                 this.SetIsUploading(true);
 
-                var imageBytes = await Task.Run(() => ConvertClipboardDibToPngImageBytes(ms));
+
+                var imageBytes = ConvertClipboardDibToPngImageBytes();
 
                 await this.UploadImage(imageBytes);
                 await Task.Run(() => this.SaveClientId());
