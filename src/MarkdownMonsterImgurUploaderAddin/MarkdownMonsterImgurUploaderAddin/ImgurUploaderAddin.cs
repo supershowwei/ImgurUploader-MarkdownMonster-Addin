@@ -50,11 +50,14 @@ namespace MarkdownMonsterImgurUploaderAddin
                 this.SetEditorFocus();
                 this.RefreshPreview();
             }
+
+            // save configuration settings
+            ImgurUploaderConfiguration.Current.Write();
         }
 
         public override void OnExecuteConfiguration(object sender)
         {
-            this.Model.Window.OpenTab(Path.Combine(AddinDirectory, "config.json"));
+            this.Model.Window.OpenTab(Path.Combine(mmApp.Configuration.CommonFolder, "ImgurUploaderAddin.json"));
         }
 
         public override bool OnCanExecute(object sender)

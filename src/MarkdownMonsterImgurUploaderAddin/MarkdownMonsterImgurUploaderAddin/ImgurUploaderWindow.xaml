@@ -29,18 +29,52 @@
         </Grid.RowDefinitions>
 
         <ToolBarPanel Grid.Row="0">
+            <StackPanel Orientation="Horizontal">
             <ToolBar FontWeight="Normal">
                 <Button IsEnabled="{Binding IsUploadEnable}" Click="UploadButton_Click">
                     <StackPanel Orientation="Horizontal">
                         <fa:FontAwesome Icon="CloudUpload"
-                                        FontSize="15"
+                                        FontSize="15" Foreground="Green"
                                         FontWeight="Normal" FontFamily="pack://application:,,,/FontAwesome.WPF;component/#FontAwesome"
                                         Margin="5,2,5,0">
                         </fa:FontAwesome>
                         <TextBlock>Upload</TextBlock>
                     </StackPanel>
                 </Button>
+                <Button  Click="CancelButton_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:FontAwesome Icon="Remove" Foreground="Firebrick"
+                                        FontSize="15"
+                                        FontWeight="Normal" FontFamily="pack://application:,,,/FontAwesome.WPF;component/#FontAwesome"
+                                        Margin="5,2,5,0">
+                        </fa:FontAwesome>
+                        <TextBlock>Cancel</TextBlock>
+                    </StackPanel>
+                </Button>
             </ToolBar>
+            <ToolBar FontWeight="Normal">
+                <Button  Click="PasteImageButton_Click" ToolTip="Paste image from clipboard and upload">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:FontAwesome Icon="Paste" 
+                                        FontSize="15"
+                                        FontWeight="Normal" FontFamily="pack://application:,,,/FontAwesome.WPF;component/#FontAwesome"
+                                        Margin="5,2,5,0">
+                        </fa:FontAwesome>
+                        <TextBlock>Paste from Clipboard</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button  Click="Settings_Click" ToolTip="Configuration Settings">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:FontAwesome Icon="Gear" 
+                                        FontSize="15"
+                                        FontWeight="Normal" FontFamily="pack://application:,,,/FontAwesome.WPF;component/#FontAwesome"
+                                        Margin="5,2,5,0">
+                        </fa:FontAwesome>
+                        <TextBlock>Settings</TextBlock>
+                    </StackPanel>
+                </Button>
+            </ToolBar>
+            </StackPanel>
         </ToolBarPanel>
 
         <StackPanel Grid.Row="1" Margin="20,10,20,0">
@@ -55,7 +89,7 @@
                 <Button Grid.Column="1" Content="..." Click="OpenFileButton_Click"/>
             </Grid>
             <Label Content="Alternate Text: (optional)"/>
-            <TextBox TextWrapping="NoWrap" Text="{Binding ImgurImage.AlternateText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox Name="TextAlternateText" TextWrapping="NoWrap" Text="{Binding ImgurImage.AlternateText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             <Label Content="Client ID: (will be saved)"/>
             <TextBox Text="{Binding ImgurImage.ClientId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>

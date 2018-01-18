@@ -42,9 +42,13 @@
       <HintPath>$(LocalAppData)\Markdown Monster\MarkdownMonster.exe</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(LocalAppData)\Markdown Monster\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Westwind.Utilities">
+      <HintPath>$(LocalAppData)\Markdown Monster\Westwind.Utilities.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
@@ -67,7 +71,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\ClipboardImageHelper.cs" />
+    <Compile Include="ImgurUploaderConfiguration.cs" />
     <Compile Include="ViewModels\ImgurImageViewModel.cs" />
     <Compile Include="ImgurUploaderWindow.xaml.cs">
       <DependentUpon>ImgurUploaderWindow.xaml</DependentUpon>
