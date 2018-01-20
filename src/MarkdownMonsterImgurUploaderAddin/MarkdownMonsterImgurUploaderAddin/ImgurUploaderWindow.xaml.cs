@@ -39,24 +39,6 @@ namespace MarkdownMonsterImgurUploaderAddin
 
         public bool IsUploadEnable => !this.isUploading;
 
-        private static byte[] ConvertClipboardImageToPngBytes()
-        {
-            if (!Clipboard.ContainsImage()) return null;
-
-            var imgSource = Clipboard.GetImage();
-
-            // TODO: probaly should support several image modes here based on a file name extension?
-            using (var ms = new MemoryStream())
-            {
-                var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(imgSource));
-                encoder.Save(ms);
-                ms.Flush();
-                ms.Position = 0;
-                return ms.ToArray();
-            }
-        }
-
         private void OnPropertyChanged(string propertyName)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
