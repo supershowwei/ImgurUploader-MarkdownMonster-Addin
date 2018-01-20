@@ -35,7 +35,7 @@ namespace MarkdownMonsterImgurUploaderAddin
 
             this.ImgurImage = new ImgurImageViewModel
             {
-                ClientId = this.originalClientId,
+                ClientId = ImgurUploaderConfiguration.Current.LastClientId,
                 Api = ImgurUploaderConfiguration.Current.ApiUrl
             };
         }
@@ -60,18 +60,11 @@ namespace MarkdownMonsterImgurUploaderAddin
             {
                 var encoder = new PngBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create(imgSource));
-                encoder.Save(ms);
+                encoder.Save(ms);                
+                ms.Flush();
+                ms.Position = 0;
                 return ms.ToArray();
             }
-
-            //using (var ms = new MemoryStream())
-            //{
-            //    var encoder = new PngBitmapEncoder();
-            //    encoder.Frames.Add(ClipboardImageHelper.ImageFromClipboardDib(dibStream));
-            //    encoder.Save(ms);
-
-            //    return ms.ToArray();
-            //}
         }
 
         private void OnPropertyChanged(string propertyName)
