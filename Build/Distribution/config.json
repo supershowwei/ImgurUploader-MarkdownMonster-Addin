@@ -1,3 +1,4 @@
 {
-  "Api":"https://api.imgur.com/3/image"
+  "Api":"https://api.imgur.com/3/image",
+  "LastClientId": ""
 }
