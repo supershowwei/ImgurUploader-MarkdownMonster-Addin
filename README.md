@@ -18,14 +18,10 @@ Download [release file](https://github.com/supershowwei/ImgurUploader-MarkdownMo
 
 3. Click the icon, input the `ClientID`.
 
-![](https://i.imgur.com/pdlzQ4I.png)
+![](https://i.imgur.com/CQDVDM5.png)
 
-4. We can assign a image file path or paste(`Ctrl + V`) image from clipboard.
+4. Assign a image file path and click upload button.
 
 #### Assign a image file path
 
-![](https://i.imgur.com/skARPcd.gif)
-
-#### Paste(Ctrl + V) image from clipboard
-
-![](https://i.imgur.com/MvoXKBj.gif)
+![](https://i.imgur.com/PHNqr9x.gif)
