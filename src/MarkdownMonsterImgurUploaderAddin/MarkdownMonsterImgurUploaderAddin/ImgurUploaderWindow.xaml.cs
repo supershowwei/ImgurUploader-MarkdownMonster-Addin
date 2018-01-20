@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 using MarkdownMonster;
 using MarkdownMonster.Windows;
 using MarkdownMonsterImgurUploaderAddin.ViewModels;
@@ -94,6 +93,11 @@ namespace MarkdownMonsterImgurUploaderAddin
 
         private async void UploadButton_Click(object sender, RoutedEventArgs e)
         {
+            await this.UploadImage();
+        }
+
+        private async Task UploadImage()
+        {
             if (string.IsNullOrEmpty(this.ImgurImage.FilePath)) return;
             if (!this.Valid()) return;
 
@@ -117,6 +121,14 @@ namespace MarkdownMonsterImgurUploaderAddin
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
             mmApp.Model.Window.OpenTab(Path.Combine(mmApp.Configuration.CommonFolder, "ImgurUploaderAddin.json"));
+        }
+
+        private async void ImgurUploaderForm_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                await this.UploadImage();
+            }
         }
 
         private async Task UploadImage(byte[] fileBytes)
