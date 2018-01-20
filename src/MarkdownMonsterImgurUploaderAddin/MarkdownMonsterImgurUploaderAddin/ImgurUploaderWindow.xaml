@@ -16,7 +16,6 @@
                       IsMaxRestoreButtonEnabled="False"    
                       Width="620" Height="300" MinWidth="620" MinHeight="300"
                       WindowStartupLocation="CenterOwner"
-                      KeyUp="ImgurUploaderForm_KeyUp"
                       ShowInTaskbar="False"
                       FontSize="15" Activated="ImgurUploaderForm_Activated"
                       d:DataContext="{d:DesignInstance local:ImgurUploaderWindow}">
@@ -53,16 +52,6 @@
                 </Button>
             </ToolBar>
             <ToolBar FontWeight="Normal">
-                <Button  Click="PasteImageButton_Click" ToolTip="Paste image from clipboard and upload">
-                    <StackPanel Orientation="Horizontal">
-                        <fa:FontAwesome Icon="Paste" 
-                                        FontSize="15"
-                                        FontWeight="Normal" FontFamily="pack://application:,,,/FontAwesome.WPF;component/#FontAwesome"
-                                        Margin="5,2,5,0">
-                        </fa:FontAwesome>
-                        <TextBlock>Paste from Clipboard</TextBlock>
-                    </StackPanel>
-                </Button>
                 <Button  Click="Settings_Click" ToolTip="Configuration Settings">
                     <StackPanel Orientation="Horizontal">
                         <fa:FontAwesome Icon="Gear" 
