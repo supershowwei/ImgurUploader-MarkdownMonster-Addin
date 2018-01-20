@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>C:\Users\supershowwei\AppData\Roaming\Markdown Monster\Addins\ImgurUploader\</OutputPath>
+    <OutputPath>$(AppData)\Markdown Monster\Addins\ImgurUploader\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,22 +31,24 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FontAwesome.WPF">
-      <HintPath Condition="Exists('C:\Users\supershowwei\AppData\Local\Markdown Monster')">C:\Users\supershowwei\AppData\Local\Markdown Monster\FontAwesome.WPF.dll</HintPath>
-      <HintPath Condition="Exists('C:\Users\wantgoo\AppData\Local\Markdown Monster')">C:\Users\wantgoo\AppData\Local\Markdown Monster\FontAwesome.WPF.dll</HintPath>
+      <HintPath>$(LocalAppData)\Markdown Monster\FontAwesome.WPF.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MahApps.Metro">
-      <HintPath Condition="Exists('C:\Users\supershowwei\AppData\Local\Markdown Monster')">C:\Users\supershowwei\AppData\Local\Markdown Monster\MahApps.Metro.dll</HintPath>
-      <HintPath Condition="Exists('C:\Users\wantgoo\AppData\Local\Markdown Monster')">C:\Users\wantgoo\AppData\Local\Markdown Monster\MahApps.Metro.dll</HintPath>
+      <HintPath>$(LocalAppData)\Markdown Monster\MahApps.Metro.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MarkdownMonster">
-      <HintPath Condition="Exists('C:\Users\supershowwei\AppData\Local\Markdown Monster')">C:\Users\supershowwei\AppData\Local\Markdown Monster\MarkdownMonster.exe</HintPath>
-      <HintPath Condition="Exists('C:\Users\wantgoo\AppData\Local\Markdown Monster')">C:\Users\wantgoo\AppData\Local\Markdown Monster\MarkdownMonster.exe</HintPath>
+      <HintPath>$(LocalAppData)\Markdown Monster\MarkdownMonster.exe</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(LocalAppData)\Markdown Monster\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Westwind.Utilities">
+      <HintPath>$(LocalAppData)\Markdown Monster\Westwind.Utilities.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
@@ -56,21 +58,20 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\ClipboardImageHelper.cs" />
+    <Compile Include="ImgurUploaderConfiguration.cs" />
     <Compile Include="ViewModels\ImgurImageViewModel.cs" />
     <Compile Include="ImgurUploaderWindow.xaml.cs">
       <DependentUpon>ImgurUploaderWindow.xaml</DependentUpon>
@@ -82,7 +83,9 @@
     <Content Include="config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Page Include="ImgurUploaderWindow.xaml">

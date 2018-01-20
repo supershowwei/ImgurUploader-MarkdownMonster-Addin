@@ -8,7 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
 using MarkdownMonster;
-using MarkdownMonsterImgurUploaderAddin.Helpers;
+using MarkdownMonster.Windows;
 using MarkdownMonsterImgurUploaderAddin.ViewModels;
 using Microsoft.Win32;
 using Newtonsoft.Json;
@@ -22,10 +22,7 @@ namespace MarkdownMonsterImgurUploaderAddin
 
         private static readonly string AddinDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-        private static readonly string ConfigFilePath = Path.Combine(AddinDirectory, "config.json");
-
-        private static readonly string ClientIdFilePath = Path.Combine(AddinDirectory, "clientid");
-
+        
         private bool isUploading;
 
         private string originalClientId;
@@ -35,10 +32,12 @@ namespace MarkdownMonsterImgurUploaderAddin
             this.InitializeComponent();
 
             var configSchema = new { Api = string.Empty };
-            var config = JsonConvert.DeserializeAnonymousType(File.ReadAllText(ConfigFilePath), configSchema);
-            this.originalClientId = LoadClientId();
 
-            this.ImgurImage = new ImgurImageViewModel { ClientId = this.originalClientId, Api = config.Api };
+            this.ImgurImage = new ImgurImageViewModel
+            {
+                ClientId = ImgurUploaderConfiguration.Current.LastClientId,
+                Api = ImgurUploaderConfiguration.Current.ApiUrl
+            };
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -49,21 +48,23 @@ namespace MarkdownMonsterImgurUploaderAddin
 
         public bool IsUploadEnable => !this.isUploading;
 
-        private static byte[] ConvertClipboardDibToPngImageBytes(MemoryStream dibStream)
+        private static byte[] ConvertClipboardImageToPngBytes()
         {
+            if (!Clipboard.ContainsImage())
+                return null;
+                
+            var imgSource = Clipboard.GetImage();
+
+            // TODO: probaly should support several image modes here based on a file name extension?
             using (var ms = new MemoryStream())
             {
                 var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(ClipboardImageHelper.ImageFromClipboardDib(dibStream));
-                encoder.Save(ms);
-
+                encoder.Frames.Add(BitmapFrame.Create(imgSource));
+                encoder.Save(ms);                
+                ms.Flush();
+                ms.Position = 0;
                 return ms.ToArray();
             }
-        }
-
-        private static string LoadClientId()
-        {
-            return File.Exists(ClientIdFilePath) ? File.ReadAllText(ClientIdFilePath) : string.Empty;
         }
 
         private void OnPropertyChanged(string propertyName)
@@ -86,23 +87,14 @@ namespace MarkdownMonsterImgurUploaderAddin
 
         private void SaveClientId()
         {
-            try
-            {
-                if (this.ImgurImage.ClientId != this.originalClientId)
-                {
-                    File.WriteAllText(ClientIdFilePath, this.ImgurImage.ClientId);
-
-                    this.originalClientId = this.ImgurImage.ClientId;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.GetBaseException().Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
+            ImgurUploaderConfiguration.Current.LastClientId = ImgurImage.ClientId;
+            this.originalClientId = this.ImgurImage.ClientId;                
         }
 
         private bool Valid()
         {
+            WindowUtilities.FixFocus(this, TextAlternateText);
+
             if (string.IsNullOrEmpty(this.ImgurImage.ClientId))
             {
                 MessageBox.Show(
@@ -150,24 +142,48 @@ namespace MarkdownMonsterImgurUploaderAddin
             this.SetIsUploading(false);
         }
 
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void PasteImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            PasteImageAndUpload();
+        }
+
+        private void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            mmApp.Model.Window.OpenTab(Path.Combine(mmApp.Configuration.CommonFolder, "ImgurUploaderAddin.json"));
+        }
+
         private async void ImgurUploaderForm_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyboardDevice.IsKeyDown(Key.LeftCtrl) && e.KeyboardDevice.IsKeyUp(Key.V)
-                && Clipboard.GetData("DeviceIndependentBitmap") is MemoryStream ms)
+            if(e.Key == Key.V && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
             {
-                this.SetImageFilePath(string.Empty);
-
-                if (!this.Valid()) return;
-
-                this.SetIsUploading(true);
-
-                var imageBytes = await Task.Run(() => ConvertClipboardDibToPngImageBytes(ms));
-
-                await this.UploadImage(imageBytes);
-                await Task.Run(() => this.SaveClientId());
-
-                this.SetIsUploading(false);
+                PasteImageAndUpload();
             }
+        }
+
+        private async void PasteImageAndUpload()
+        {
+            if (!Clipboard.ContainsImage())
+                return;
+
+            this.SetImageFilePath(string.Empty);
+
+            if (!this.Valid()) return;
+
+            this.SetIsUploading(true);
+
+
+            var imageBytes = ConvertClipboardImageToPngBytes();
+
+            await this.UploadImage(imageBytes);
+            this.SaveClientId();
+
+            this.SetIsUploading(false);
         }
 
         private async Task UploadImage(byte[] fileBytes)
