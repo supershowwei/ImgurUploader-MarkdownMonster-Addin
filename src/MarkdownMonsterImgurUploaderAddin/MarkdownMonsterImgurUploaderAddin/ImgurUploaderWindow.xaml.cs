@@ -27,6 +27,8 @@ namespace MarkdownMonsterImgurUploaderAddin
 
         private string originalClientId;
 
+        public CommandBase PasteCommand { get; set; }
+
         public ImgurUploaderWindow()
         {
             this.InitializeComponent();
@@ -38,6 +40,12 @@ namespace MarkdownMonsterImgurUploaderAddin
                 ClientId = ImgurUploaderConfiguration.Current.LastClientId,
                 Api = ImgurUploaderConfiguration.Current.ApiUrl
             };
+
+            
+            // Handle Ctrl-V on Form and file Textbox - others tbs aren't affected
+            PasteCommand = new CommandBase((s, c) => PasteImageAndUpload(), (s,c)=>true);
+
+            DataContext = this;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -156,14 +164,6 @@ namespace MarkdownMonsterImgurUploaderAddin
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
             mmApp.Model.Window.OpenTab(Path.Combine(mmApp.Configuration.CommonFolder, "ImgurUploaderAddin.json"));
-        }
-
-        private async void ImgurUploaderForm_KeyUp(object sender, KeyEventArgs e)
-        {
-            if(e.Key == Key.V && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
-            {
-                PasteImageAndUpload();
-            }
         }
 
         private async void PasteImageAndUpload()
