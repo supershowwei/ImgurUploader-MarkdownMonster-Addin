@@ -1,12 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
-using MahApps.Metro.Controls;
 using MarkdownMonster;
 using MarkdownMonster.Windows;
 using MarkdownMonsterImgurUploaderAddin.ViewModels;
@@ -16,36 +13,21 @@ using RestSharp;
 
 namespace MarkdownMonsterImgurUploaderAddin
 {
-    public partial class ImgurUploaderWindow : MetroWindow, INotifyPropertyChanged
+    public partial class ImgurUploaderWindow : INotifyPropertyChanged
     {
         private static readonly string DefaultStatusText = "Ready to upload image.";
 
-        private static readonly string AddinDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-        
         private bool isUploading;
-
-        private string originalClientId;
-
-        public CommandBase PasteCommand { get; set; }
 
         public ImgurUploaderWindow()
         {
             this.InitializeComponent();
 
-            var configSchema = new { Api = string.Empty };
-
             this.ImgurImage = new ImgurImageViewModel
-            {
-                ClientId = ImgurUploaderConfiguration.Current.LastClientId,
-                Api = ImgurUploaderConfiguration.Current.ApiUrl
-            };
-
-            
-            // Handle Ctrl-V on Form and file Textbox - others tbs aren't affected
-            PasteCommand = new CommandBase((s, c) => PasteImageAndUpload(), (s,c)=>true);
-
-            DataContext = this;
+                                  {
+                                      ClientId = ImgurUploaderConfiguration.Current.LastClientId,
+                                      Api = ImgurUploaderConfiguration.Current.ApiUrl
+                                  };
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -55,25 +37,6 @@ namespace MarkdownMonsterImgurUploaderAddin
         public string StatusText => this.isUploading ? "Image uploading ..." : DefaultStatusText;
 
         public bool IsUploadEnable => !this.isUploading;
-
-        private static byte[] ConvertClipboardImageToPngBytes()
-        {
-            if (!Clipboard.ContainsImage())
-                return null;
-                
-            var imgSource = Clipboard.GetImage();
-
-            // TODO: probaly should support several image modes here based on a file name extension?
-            using (var ms = new MemoryStream())
-            {
-                var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(imgSource));
-                encoder.Save(ms);                
-                ms.Flush();
-                ms.Position = 0;
-                return ms.ToArray();
-            }
-        }
 
         private void OnPropertyChanged(string propertyName)
         {
@@ -93,15 +56,9 @@ namespace MarkdownMonsterImgurUploaderAddin
             this.OnPropertyChanged(nameof(this.IsUploadEnable));
         }
 
-        private void SaveClientId()
-        {
-            ImgurUploaderConfiguration.Current.LastClientId = ImgurImage.ClientId;
-            this.originalClientId = this.ImgurImage.ClientId;                
-        }
-
         private bool Valid()
         {
-            WindowUtilities.FixFocus(this, TextAlternateText);
+            WindowUtilities.FixFocus(this, this.TextAlternateText);
 
             if (string.IsNullOrEmpty(this.ImgurImage.ClientId))
             {
@@ -136,6 +93,11 @@ namespace MarkdownMonsterImgurUploaderAddin
 
         private async void UploadButton_Click(object sender, RoutedEventArgs e)
         {
+            await this.UploadImage();
+        }
+
+        private async Task UploadImage()
+        {
             if (string.IsNullOrEmpty(this.ImgurImage.FilePath)) return;
             if (!this.Valid()) return;
 
@@ -144,21 +106,16 @@ namespace MarkdownMonsterImgurUploaderAddin
             if (File.Exists(this.ImgurImage.FilePath))
             {
                 await this.UploadImage(this.ImgurImage.FilePath);
-                await Task.Run(() => this.SaveClientId());
+
+                ImgurUploaderConfiguration.Current.LastClientId = this.ImgurImage.ClientId;
             }
 
             this.SetIsUploading(false);
         }
 
-
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            Close();
-        }
-
-        private void PasteImageButton_Click(object sender, RoutedEventArgs e)
-        {
-            PasteImageAndUpload();
+            this.Close();
         }
 
         private void Settings_Click(object sender, RoutedEventArgs e)
@@ -166,24 +123,12 @@ namespace MarkdownMonsterImgurUploaderAddin
             mmApp.Model.Window.OpenTab(Path.Combine(mmApp.Configuration.CommonFolder, "ImgurUploaderAddin.json"));
         }
 
-        private async void PasteImageAndUpload()
+        private async void ImgurUploaderForm_KeyUp(object sender, KeyEventArgs e)
         {
-            if (!Clipboard.ContainsImage())
-                return;
-
-            this.SetImageFilePath(string.Empty);
-
-            if (!this.Valid()) return;
-
-            this.SetIsUploading(true);
-
-
-            var imageBytes = ConvertClipboardImageToPngBytes();
-
-            await this.UploadImage(imageBytes);
-            this.SaveClientId();
-
-            this.SetIsUploading(false);
+            if (e.Key == Key.Enter)
+            {
+                await this.UploadImage();
+            }
         }
 
         private async Task UploadImage(byte[] fileBytes)

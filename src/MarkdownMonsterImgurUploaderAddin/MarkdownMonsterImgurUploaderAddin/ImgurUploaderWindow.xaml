@@ -54,16 +54,6 @@
                 </Button>
             </ToolBar>
             <ToolBar FontWeight="Normal">
-                <Button  Click="PasteImageButton_Click" ToolTip="Paste image from clipboard and upload">
-                    <StackPanel Orientation="Horizontal">
-                        <fa:FontAwesome Icon="Paste" 
-                                        FontSize="15"
-                                        FontWeight="Normal" FontFamily="pack://application:,,,/FontAwesome.WPF;component/#FontAwesome"
-                                        Margin="5,2,5,0">
-                        </fa:FontAwesome>
-                        <TextBlock>Paste from Clipboard</TextBlock>
-                    </StackPanel>
-                </Button>
                 <Button  Click="Settings_Click" ToolTip="Configuration Settings">
                     <StackPanel Orientation="Horizontal">
                         <fa:FontAwesome Icon="Gear" 
