@@ -22,6 +22,4 @@ Download [release file](https://github.com/supershowwei/ImgurUploader-MarkdownMo
 
 4. Assign a image file path and click upload button. (Or paste image from clipboard that will upload automatically.)
 
-#### Assign a image file path
-
 ![](https://i.imgur.com/PHNqr9x.gif)
