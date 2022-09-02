@@ -20,7 +20,7 @@ Download [release file](https://github.com/supershowwei/ImgurUploader-MarkdownMo
 
 ![](https://i.imgur.com/CQDVDM5.png)
 
-4. Assign a image file path and click upload button.
+4. Assign a image file path (or paste image from clipboard) and click upload button.
 
 #### Assign a image file path
 
