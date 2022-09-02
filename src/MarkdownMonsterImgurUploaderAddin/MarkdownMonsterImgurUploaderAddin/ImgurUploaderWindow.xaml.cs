@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using MarkdownMonster;
 using MarkdownMonster.Windows;
 using MarkdownMonsterImgurUploaderAddin.ViewModels;
@@ -28,15 +29,49 @@ namespace MarkdownMonsterImgurUploaderAddin
                                       ClientId = ImgurUploaderConfiguration.Current.LastClientId,
                                       Api = ImgurUploaderConfiguration.Current.ApiUrl
                                   };
+
+            this.OpenFileCommand = new CommandBase((s, c) => this.OpenFile(), (s, c) => true);
+            this.UploadCommand = new CommandBase(async (s, c) => await this.UploadImage(), (s, c) => true);
+            this.PasteCommand = new CommandBase(async (s, c) => await this.PasteImageAndUpload(), (s, c) => true);
+            this.CancelCommand = new CommandBase((s, c) => this.Close(), (s, c) => true);
+            this.OpenSettingsCommand = new CommandBase((s, c) => this.OpenSettings(), (s, c) => true);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public ICommand OpenFileCommand { get; set; }
+        
+        public ICommand UploadCommand { get; set; }
+
+        public ICommand PasteCommand { get; set; }
+
+        public ICommand CancelCommand { get; set; }
+
+        public ICommand OpenSettingsCommand { get; set; }
 
         public ImgurImageViewModel ImgurImage { get; set; }
 
         public string StatusText => this.isUploading ? "Image uploading ..." : DefaultStatusText;
 
         public bool IsUploadEnable => !this.isUploading;
+
+        private static byte[] ConvertClipboardImageToPngBytes()
+        {
+            if (!Clipboard.ContainsImage()) return null;
+
+            var imgSource = Clipboard.GetImage();
+
+            // TODO: probaly should support several image modes here based on a file name extension?
+            using (var ms = new MemoryStream())
+            {
+                var encoder = new JpegBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(imgSource));
+                encoder.Save(ms);
+                ms.Flush();
+                ms.Position = 0;
+                return ms.ToArray();
+            }
+        }
 
         private void OnPropertyChanged(string propertyName)
         {
@@ -81,7 +116,7 @@ namespace MarkdownMonsterImgurUploaderAddin
             return true;
         }
 
-        private void OpenFileButton_Click(object sender, RoutedEventArgs e)
+        private void OpenFile()
         {
             var openFileDialog = new OpenFileDialog();
 
@@ -91,9 +126,21 @@ namespace MarkdownMonsterImgurUploaderAddin
             }
         }
 
-        private async void UploadButton_Click(object sender, RoutedEventArgs e)
+        private async Task PasteImageAndUpload()
         {
-            await this.UploadImage();
+            if (!Clipboard.ContainsImage()) return;
+
+            this.SetImageFilePath(string.Empty);
+
+            if (!this.Valid()) return;
+
+            this.SetIsUploading(true);
+
+            var imageBytes = ConvertClipboardImageToPngBytes();
+
+            await this.UploadImage(imageBytes);
+
+            this.SetIsUploading(false);
         }
 
         private async Task UploadImage()
@@ -113,22 +160,9 @@ namespace MarkdownMonsterImgurUploaderAddin
             this.SetIsUploading(false);
         }
 
-        private void CancelButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
-
-        private void Settings_Click(object sender, RoutedEventArgs e)
+        private void OpenSettings()
         {
             mmApp.Model.Window.OpenTab(Path.Combine(mmApp.Configuration.CommonFolder, "ImgurUploaderAddin.json"));
-        }
-
-        private async void ImgurUploaderForm_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                await this.UploadImage();
-            }
         }
 
         private async Task UploadImage(byte[] fileBytes)
@@ -138,20 +172,15 @@ namespace MarkdownMonsterImgurUploaderAddin
                 var base64File = Convert.ToBase64String(fileBytes);
 
                 var client = new RestClient(this.ImgurImage.Api);
-                var request = new RestRequest(Method.POST);
+                var request = new RestRequest { Method = Method.Post };
                 request.AddHeader("Authorization", $"Client-ID {this.ImgurImage.ClientId}");
                 request.AddParameter("image", base64File);
 
-                var response = await client.ExecuteTaskAsync(request);
+                var response = await client.ExecuteAsync(request);
 
-                var imgurResultSchema = new
-                                            {
-                                                Data = new { Error = string.Empty, Link = string.Empty },
-                                                Success = false,
-                                                Status = 0
-                                            };
-
-                var result = JsonConvert.DeserializeAnonymousType(response.Content, imgurResultSchema);
+                var result = JsonConvert.DeserializeAnonymousType(
+                    response.Content,
+                    new { Data = new { Error = string.Empty, Link = string.Empty }, Success = false, Status = 0 });
 
                 if (!result.Success)
                 {
@@ -174,9 +203,10 @@ namespace MarkdownMonsterImgurUploaderAddin
             return this.UploadImage(File.ReadAllBytes(filePath));
         }
 
-        private void ImgurUploaderForm_Activated(object sender, EventArgs e)
+        private void OnImgurUploaderFormActivated(object sender, EventArgs e)
         {
             this.DataContext = this;
+
             mmApp.SetThemeWindowOverride(this);
 
             this.ImageFilePathTextBox.Focus();

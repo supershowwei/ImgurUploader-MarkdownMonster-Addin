@@ -13,81 +13,90 @@
                       ResizeMode="CanResizeWithGrip"
                       WindowStyle="SingleBorderWindow"
                       IsMinButtonEnabled="False"
-                      IsMaxRestoreButtonEnabled="False"    
+                      IsMaxRestoreButtonEnabled="False"
                       Width="620" Height="300" MinWidth="620" MinHeight="300"
                       WindowStartupLocation="CenterOwner"
-                      KeyUp="ImgurUploaderForm_KeyUp"
                       ShowInTaskbar="False"
-                      FontSize="15" Activated="ImgurUploaderForm_Activated"
+                      FontSize="15"
+                      Activated="OnImgurUploaderFormActivated"
                       d:DataContext="{d:DesignInstance local:ImgurUploaderWindow}">
-    
-    <Grid x:Name="MainGrid">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="30" />
-        </Grid.RowDefinitions>
+	<Window.InputBindings>
+		<KeyBinding Key="Return" Command="{Binding UploadCommand}" />
+		<KeyBinding Key="V" Modifiers="Ctrl" Command="{Binding PasteCommand}" />
+	</Window.InputBindings>
+	<Grid x:Name="MainGrid">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="30" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="30" />
+		</Grid.RowDefinitions>
 
-        <ToolBarPanel Grid.Row="0">
-            <StackPanel Orientation="Horizontal">
-            <ToolBar FontWeight="Normal">
-                <Button IsEnabled="{Binding IsUploadEnable}" Click="UploadButton_Click">
-                    <StackPanel Orientation="Horizontal">
-                        <fa:FontAwesome Icon="CloudUpload"
-                                        FontSize="15" Foreground="Green"
-                                        FontWeight="Normal" FontFamily="pack://application:,,,/FontAwesome.WPF;component/#FontAwesome"
-                                        Margin="5,2,5,0">
-                        </fa:FontAwesome>
-                        <TextBlock>Upload</TextBlock>
-                    </StackPanel>
-                </Button>
-                <Button  Click="CancelButton_Click">
-                    <StackPanel Orientation="Horizontal">
-                        <fa:FontAwesome Icon="Remove" Foreground="Firebrick"
-                                        FontSize="15"
-                                        FontWeight="Normal" FontFamily="pack://application:,,,/FontAwesome.WPF;component/#FontAwesome"
-                                        Margin="5,2,5,0">
-                        </fa:FontAwesome>
-                        <TextBlock>Cancel</TextBlock>
-                    </StackPanel>
-                </Button>
-            </ToolBar>
-            <ToolBar FontWeight="Normal">
-                <Button  Click="Settings_Click" ToolTip="Configuration Settings">
-                    <StackPanel Orientation="Horizontal">
-                        <fa:FontAwesome Icon="Gear" 
-                                        FontSize="15"
-                                        FontWeight="Normal" FontFamily="pack://application:,,,/FontAwesome.WPF;component/#FontAwesome"
-                                        Margin="5,2,5,0">
-                        </fa:FontAwesome>
-                        <TextBlock>Settings</TextBlock>
-                    </StackPanel>
-                </Button>
-            </ToolBar>
-            </StackPanel>
-        </ToolBarPanel>
+		<ToolBarPanel Grid.Row="0">
+			<StackPanel Orientation="Horizontal">
+				<ToolBar FontWeight="Normal">
+					<Button IsEnabled="{Binding IsUploadEnable}" Command="{Binding UploadCommand}">
+						<StackPanel Orientation="Horizontal">
+							<fa:FontAwesome Icon="CloudUpload"
+							                FontSize="15" Foreground="Green"
+							                FontWeight="Normal" FontFamily="pack://application:,,,/FontAwesome.WPF;component/#FontAwesome"
+							                Margin="5,2,5,0">
+							</fa:FontAwesome>
+							<TextBlock>Upload</TextBlock>
+						</StackPanel>
+					</Button>
+					<Button Command="{Binding CancelCommand}">
+						<StackPanel Orientation="Horizontal">
+							<fa:FontAwesome Icon="Remove" Foreground="Firebrick"
+							                FontSize="15"
+							                FontWeight="Normal" FontFamily="pack://application:,,,/FontAwesome.WPF;component/#FontAwesome"
+							                Margin="5,2,5,0">
+							</fa:FontAwesome>
+							<TextBlock>Cancel</TextBlock>
+						</StackPanel>
+					</Button>
+				</ToolBar>
+				<ToolBar FontWeight="Normal">
+					<Button ToolTip="Configuration Settings" Command="{Binding OpenSettingsCommand}">
+						<StackPanel Orientation="Horizontal">
+							<fa:FontAwesome Icon="Gear"
+							                FontSize="15"
+							                FontWeight="Normal" FontFamily="pack://application:,,,/FontAwesome.WPF;component/#FontAwesome"
+							                Margin="5,2,5,0">
+							</fa:FontAwesome>
+							<TextBlock>Settings</TextBlock>
+						</StackPanel>
+					</Button>
+				</ToolBar>
+			</StackPanel>
+		</ToolBarPanel>
 
-        <StackPanel Grid.Row="1" Margin="20,10,20,0">
-            <Label Content="Image File:"/>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="30"/>
-                </Grid.ColumnDefinitions>
+		<StackPanel Grid.Row="1" Margin="20,10,20,0">
+			<Label Content="Image File:" />
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="30" />
+				</Grid.ColumnDefinitions>
 
-                <TextBox Grid.Column="0" Name="ImageFilePathTextBox" TextWrapping="NoWrap" Text="{Binding ImgurImage.FilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                <Button Grid.Column="1" Content="..." Click="OpenFileButton_Click"/>
-            </Grid>
-            <Label Content="Alternate Text: (optional)"/>
-            <TextBox Name="TextAlternateText" TextWrapping="NoWrap" Text="{Binding ImgurImage.AlternateText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            <Label Content="Client ID: (will be saved)"/>
-            <TextBox Text="{Binding ImgurImage.ClientId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        </StackPanel>
+				<TextBox Grid.Column="0" Name="ImageFilePathTextBox" TextWrapping="NoWrap"
+				         Text="{Binding ImgurImage.FilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+					<TextBox.InputBindings>
+						<KeyBinding Key="V" Modifiers="Ctrl" Command="{Binding PasteCommand}" />
+					</TextBox.InputBindings>
+				</TextBox>
+				<Button Grid.Column="1" Content="..." Command="{Binding OpenFileCommand}" />
+			</Grid>
+			<Label Content="Alternate Text: (optional)" />
+			<TextBox Name="TextAlternateText" TextWrapping="NoWrap"
+			         Text="{Binding ImgurImage.AlternateText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+			<Label Content="Client ID: (will be saved)" />
+			<TextBox Text="{Binding ImgurImage.ClientId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+		</StackPanel>
 
-        <StatusBar Grid.Row="2">
-            <StatusBarItem>
-                <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" Text="{Binding StatusText}"></TextBlock>
-            </StatusBarItem>
-        </StatusBar>
-    </Grid>
+		<StatusBar Grid.Row="2">
+			<StatusBarItem>
+				<TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" Text="{Binding StatusText}"></TextBlock>
+			</StatusBarItem>
+		</StatusBar>
+	</Grid>
 </controls:MetroWindow>

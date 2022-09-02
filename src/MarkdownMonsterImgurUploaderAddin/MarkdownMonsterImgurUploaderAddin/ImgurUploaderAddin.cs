@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
 using FontAwesome.WPF;
 using MarkdownMonster;
 using MarkdownMonster.AddIns;
@@ -9,20 +11,12 @@ namespace MarkdownMonsterImgurUploaderAddin
 {
     public class ImgurUploaderAddin : MarkdownMonsterAddin
     {
-        private static readonly string AddinDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-        public ImgurUploaderAddin()
+        public override Task OnApplicationInitialized(AppModel model)
         {
             this.Id = "ImgurUploaderAddin";
             this.Name = "ImgurUploader Addin";
-        }
 
-        public override void OnApplicationStart()
-        {
-            base.OnApplicationStart();
-
-            var menuItem =
-                new AddInMenuItem(this) { Caption = "ImgurUploader", FontawesomeIcon = FontAwesomeIcon.Image };
+            var menuItem = new AddInMenuItem(this) { Caption = "ImgurUploader", FontawesomeIcon = FontAwesomeIcon.AddressBook };
 
             try
             {
@@ -36,28 +30,43 @@ namespace MarkdownMonsterImgurUploaderAddin
             }
 
             this.MenuItems.Add(menuItem);
+
+            return Task.CompletedTask;
         }
 
-        public override void OnExecute(object sender)
+        public override Task OnWindowLoaded()
         {
-            var form = new ImgurUploaderWindow { Owner = this.Model.Window };
-
-            form.ShowDialog();
-
-            if (!string.IsNullOrEmpty(form.ImgurImage.Url))
-            {
-                this.SetSelection($"![{form.ImgurImage.AlternateText}]({form.ImgurImage.Url})");
-                this.SetEditorFocus();
-                this.RefreshPreview();
-            }
-
-            // save configuration settings
-            ImgurUploaderConfiguration.Current.Write();
+            return Task.CompletedTask;
         }
 
-        public override void OnExecuteConfiguration(object sender)
+        public override Task OnExecute(object sender)
+        {
+            this.Model.Window.Dispatcher.InvokeAsync(
+                () =>
+                    {
+                        var form = new ImgurUploaderWindow { Owner = this.Model.Window };
+
+                        form.ShowDialog();
+
+                        if (!string.IsNullOrEmpty(form.ImgurImage.Url))
+                        {
+                            this.SetSelection($"![{form.ImgurImage.AlternateText}]({form.ImgurImage.Url})");
+                            this.SetEditorFocus();
+                            this.RefreshPreview();
+                        }
+
+                        // save configuration settings
+                        ImgurUploaderConfiguration.Current.Write();
+                    });
+            
+            return Task.CompletedTask;
+        }
+
+        public override Task OnExecuteConfiguration(object sender)
         {
             this.Model.Window.OpenTab(Path.Combine(mmApp.Configuration.CommonFolder, "ImgurUploaderAddin.json"));
+            
+            return Task.CompletedTask;
         }
 
         public override bool OnCanExecute(object sender)
