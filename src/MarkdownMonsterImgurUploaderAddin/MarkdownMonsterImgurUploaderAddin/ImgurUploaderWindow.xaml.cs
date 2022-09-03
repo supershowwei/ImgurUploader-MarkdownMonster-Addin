@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -10,7 +13,6 @@ using MarkdownMonster.Windows;
 using MarkdownMonsterImgurUploaderAddin.ViewModels;
 using Microsoft.Win32;
 using Newtonsoft.Json;
-using RestSharp;
 
 namespace MarkdownMonsterImgurUploaderAddin
 {
@@ -55,7 +57,7 @@ namespace MarkdownMonsterImgurUploaderAddin
 
         public bool IsUploadEnable => !this.isUploading;
 
-        private static byte[] ConvertClipboardImageToPngBytes()
+        private static byte[] ConvertClipboardImageToBytes()
         {
             if (!Clipboard.ContainsImage()) return null;
 
@@ -136,7 +138,7 @@ namespace MarkdownMonsterImgurUploaderAddin
 
             this.SetIsUploading(true);
 
-            var imageBytes = ConvertClipboardImageToPngBytes();
+            var imageBytes = ConvertClipboardImageToBytes();
 
             await this.UploadImage(imageBytes);
 
@@ -171,15 +173,20 @@ namespace MarkdownMonsterImgurUploaderAddin
             {
                 var base64File = Convert.ToBase64String(fileBytes);
 
-                var client = new RestClient(this.ImgurImage.Api);
-                var request = new RestRequest { Method = Method.Post };
-                request.AddHeader("Authorization", $"Client-ID {this.ImgurImage.ClientId}");
-                request.AddParameter("image", base64File);
+                var client = new HttpClient();
 
-                var response = await client.ExecuteAsync(request);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Client-ID", this.ImgurImage.ClientId);
+
+                var request = new HttpRequestMessage(HttpMethod.Post, this.ImgurImage.Api);
+
+                request.Content = new FormUrlEncodedContent(new Dictionary<string, string> { ["image"] = base64File });
+
+                var response = await client.SendAsync(request);
+
+                var responseContent = await response.Content.ReadAsStringAsync();
 
                 var result = JsonConvert.DeserializeAnonymousType(
-                    response.Content,
+                    responseContent,
                     new { Data = new { Error = string.Empty, Link = string.Empty }, Success = false, Status = 0 });
 
                 if (!result.Success)

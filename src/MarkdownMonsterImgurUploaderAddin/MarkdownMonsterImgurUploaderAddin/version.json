@@ -3,9 +3,9 @@
   "name": "MarkdownMonsterImgurUploaderAddin",
   "summary": "Uploading image to imgur.",
   "description": "Uploading image to imgur.",
-  "version": "0.5",
+  "version": "0.6",
   "minVersion": "2.0",
   "maxVersion": "2.99",
-  "author": "© AppCookhouse",
+  "author": "© supershowwei",
   "updated": "2022-09-02T03:50:00Z"
 }
