@@ -57,22 +57,21 @@ namespace MarkdownMonsterImgurUploaderAddin
 
         public bool IsUploadEnable => !this.isUploading;
 
-        private static byte[] ConvertClipboardImageToBytes()
+        private static Stream GetClipboardImageStream()
         {
             if (!Clipboard.ContainsImage()) return null;
 
             var imgSource = Clipboard.GetImage();
 
             // TODO: probaly should support several image modes here based on a file name extension?
-            using (var ms = new MemoryStream())
-            {
-                var encoder = new JpegBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(imgSource));
-                encoder.Save(ms);
-                ms.Flush();
-                ms.Position = 0;
-                return ms.ToArray();
-            }
+            var ms = new MemoryStream();
+            var encoder = new JpegBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(imgSource));
+            encoder.Save(ms);
+            ms.Flush();
+            ms.Position = 0;
+
+            return ms;
         }
 
         private void OnPropertyChanged(string propertyName)
@@ -138,9 +137,9 @@ namespace MarkdownMonsterImgurUploaderAddin
 
             this.SetIsUploading(true);
 
-            var imageBytes = ConvertClipboardImageToBytes();
+            var imageStream = GetClipboardImageStream();
 
-            await this.UploadImage(imageBytes);
+            await this.UploadImage(imageStream);
 
             this.SetIsUploading(false);
         }
@@ -167,19 +166,17 @@ namespace MarkdownMonsterImgurUploaderAddin
             mmApp.Model.Window.OpenTab(Path.Combine(mmApp.Configuration.CommonFolder, "ImgurUploaderAddin.json"));
         }
 
-        private async Task UploadImage(byte[] fileBytes)
+        private async Task UploadImage(Stream content)
         {
             try
             {
-                var base64File = Convert.ToBase64String(fileBytes);
-
                 var client = new HttpClient();
 
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Client-ID", this.ImgurImage.ClientId);
 
                 var request = new HttpRequestMessage(HttpMethod.Post, this.ImgurImage.Api);
 
-                request.Content = new FormUrlEncodedContent(new Dictionary<string, string> { ["image"] = base64File });
+                request.Content = new MultipartFormDataContent { { new StreamContent(content), "image" } };
 
                 var response = await client.SendAsync(request);
 
@@ -203,11 +200,15 @@ namespace MarkdownMonsterImgurUploaderAddin
             {
                 MessageBox.Show(ex.GetBaseException().Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+            finally
+            {
+                content.Close();
+            }
         }
 
         private Task UploadImage(string filePath)
         {
-            return this.UploadImage(File.ReadAllBytes(filePath));
+            return this.UploadImage(File.OpenRead(filePath));
         }
 
         private void OnImgurUploaderFormActivated(object sender, EventArgs e)
